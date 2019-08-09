@@ -26,7 +26,7 @@ def parseGenre(name_input):
 
 print('Adding genres...')
 
-file = open(os.getcwd() + '/sample_data/Florence_164/genre.txt', 'r')
+file = open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/genre.txt', 'r')
 
 line = file.readline().rstrip('\n')
 

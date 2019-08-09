@@ -111,7 +111,7 @@ if __name__ == "__main__":
     mediapath = getattr(settings, "MEDIA_ROOT", None)
     mediapath = mediapath + mediatype
 
-    with open(os.getcwd() + '/sample_data/Florence_164/Florence_metadata_SIMSSA_DB.csv') as csvfile:
+    with open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/Florence_metadata_SIMSSA_DB.csv') as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
 
         for row in readCSV:
@@ -143,11 +143,11 @@ if __name__ == "__main__":
             file_input = []
             print('portion', source_portion_input)
             file_type_input = ['xml', 'midi', 'pdf', 'sibelius']
-            for folder_name in os.listdir(os.path.join(os.getcwd(), 'sample_data', 'Florence_164', 'files')):
+            for folder_name in os.listdir(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'Florence_164', 'files')):
                 if folder_name == ".DS_Store":
                     continue
                 for file_name in os.listdir(
-                        os.path.join(os.getcwd(), 'sample_data', 'Florence_164', 'files', folder_name)):
+                        os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'Florence_164', 'files', folder_name)):
                     if file_name == ".DS_Store":
                         continue
                     if int(float(source_portion_input)) < 10:
@@ -265,7 +265,7 @@ if __name__ == "__main__":
                             os.remove(mediapath + filename_media)
 
                     file_path = os.getcwd()
-                    file_path += '/sample_data/Florence_164/files/'
+                    file_path += '/sample_data_for_SIMSSA_DB/Florence_164/files/'
                     file_path += file_type_input[index]
                     file_path += '/'
                     for index2, val2 in enumerate(file_input):

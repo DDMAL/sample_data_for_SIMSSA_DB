@@ -38,7 +38,7 @@ def parseEncoder(software, work_flow_text_input):
 
 print('Adding encoders...')
 
-with open(os.getcwd() + '/sample_data/Florence_164/encoder.csv') \
+with open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/encoder.csv') \
         as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
 

@@ -32,7 +32,7 @@ def parsePerson(surname_input, given_name_input):
 
 print('Adding persons...')
 
-with open(os.getcwd() + '/sample_data/Florence_164/person.csv')\
+with open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/person.csv')\
     as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     for row in readCSV:

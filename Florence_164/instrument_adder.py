@@ -28,7 +28,7 @@ def parseInstrument(name_input):
 
 print('Adding instruments...')
 
-file = open(os.getcwd() + '/sample_data/Florence_164/instrument.txt', 'r')
+file = open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/instrument.txt', 'r')
 
 line = file.readline().rstrip('\n')
 

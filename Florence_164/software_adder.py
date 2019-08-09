@@ -25,7 +25,7 @@ def parseSoftware(name_input, version_input):
 
 print('Adding software...')
 
-with open(os.getcwd() + '/sample_data/Florence_164/software.csv') as csvfile:
+with open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/software.csv') as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     for row in readCSV:
         name_input = row[0]

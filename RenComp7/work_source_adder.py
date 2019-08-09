@@ -37,7 +37,7 @@ from database.models.contribution_musical_work import ContributionMusicalWork
 from database.models.contribution_section import ContributionSection
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
-from sample_data.Florence_164.work_source_adder import parseSource
+from sample_data_for_SIMSSA_DB.Florence_164.work_source_adder import parseSource
 
 def createContribution(p, work, section):
     """
@@ -296,6 +296,6 @@ if __name__ == "__main__":
             counter, header = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
                                        folder_name, counter, header)
 
-    with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data", 'RenComp7_metadata.csv'), 'w') as csvFile:
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data_for_SIMSSA_DB", 'RenComp7_metadata.csv'), 'w') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerows(header)

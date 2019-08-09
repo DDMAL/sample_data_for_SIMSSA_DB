@@ -30,7 +30,7 @@ def parse_collection(title):
 
 print('Adding collections...')
 
-with open(os.getcwd() + '/sample_data/Florence_164/collection.csv') \
+with open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/collection.csv') \
         as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     for row in readCSV:

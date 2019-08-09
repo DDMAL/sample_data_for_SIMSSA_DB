@@ -30,8 +30,8 @@ from database.models.file import File
 from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
-from sample_data.RenComp7.work_source_adder import createContribution
-from sample_data.Florence_164.work_source_adder import parseSource
+from sample_data_for_SIMSSA_DB.RenComp7.work_source_adder import createContribution
+from sample_data_for_SIMSSA_DB.Florence_164.work_source_adder import parseSource
 
 
 
