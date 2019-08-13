@@ -25,7 +25,6 @@ from database.models.musical_work import MusicalWork
 from database.models.person import Person
 from database.models.section import Section
 from database.models.source import Source
-from database.models.collection_of_sources import CollectionOfSources
 from database.models.file import File
 from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.genre_as_in_type import GenreAsInType
@@ -147,14 +146,18 @@ def addPiece(
                                 print('match!')
                                 file_name = each_row[2]
                                 section_name = each_row[3]
-                                collection = CollectionOfSources.objects.get_or_create(
-                                    title=each_row[7])[0]
                                 source = Source.objects.get_or_create(
-                                    collection=collection, portion=str(counter)
+                                    title=each_row[7], source_type='DIGITAL'
                                 )[0]
-                                source_instantiation = SourceInstantiation.objects.get_or_create(
-                                    source=source
+                                if section_name != '':
+                                    source_instantiation = SourceInstantiation.objects.get_or_create(
+                                    source=source, portion=str(counter)
                                 )[0]
+
+                                else:
+                                    source_instantiation = SourceInstantiation.objects.get_or_create(
+                                        source=source, portion=str(counter), work=work
+                                    )[0]
                                 genre_type_input = each_row[4]
                             else:
 
@@ -169,38 +172,34 @@ def addPiece(
                             print('not match?')
                 # Save these info into the DB
                 work, bool_work_new = MusicalWork.objects.get_or_create(
-                    variant_titles=[file_name]
+                    variant_titles=[file_name], contributions__person__surname=surname_input,
+                    contributions__person__given_name=given_name_input
                 )
-                if section_name == "":  # No section
-                    section, bool_section_new = Section.objects.get_or_create(
-                        title=file_name, musical_work=work
-                    )
-                else:
+                if section_name != "":  # No section
                     section, bool_section_new = Section.objects.get_or_create(
                         title=section_name, musical_work=work
                     )
                 if bool_section_new == True:  # the sections do not exist
-                    contribute = createContribution(p, work, section)
+                    contribute = createContribution(p, work)
                 else:  # In case they both exist, create a new musical work for the new composer since their piece has the same
                     # name
                     if section_name == "":  # The same file name with no sections
                         counter_same_file += 1
 
                         work, bool_work_new = MusicalWork.objects.get_or_create(
-                            variant_titles=[file_name]
-                        )
-                        section, bool_section_new = Section.objects.get_or_create(
-                            title=file_name, musical_work=work
+                            variant_titles=[file_name], contributions__person__surname=surname_input,
+                    contributions__person__given_name=given_name_input
                         )
                     else:
                         work, bool_work_new = MusicalWork.objects.get_or_create(
-                            variant_titles=[file_name]
+                            variant_titles=[file_name], contributions__person__surname=surname_input,
+                    contributions__person__given_name=given_name_input
                         )
                         section, bool_section_new = Section.objects.get_or_create(
                             title=section_name, musical_work=work
                         )
 
-                    contribute = createContribution(p, work, section)
+                    contribute = createContribution(p, work)
                 # Create collections
                 genre_style_input = 'Renaissance'
                 genre_type_input = 'Mass'
@@ -210,7 +209,8 @@ def addPiece(
                 work.genres_as_in_type.add(genre[0])
                 work.sacred_or_secular = True  # This dataset contains all religious pieces
                 work.save()
-                source_instantiation.sections.add(section)
+                if section_name != '':
+                    source_instantiation.sections.add(section)
                 file_path = os.path.join(
                     os.getcwd(),
                     folder_name,

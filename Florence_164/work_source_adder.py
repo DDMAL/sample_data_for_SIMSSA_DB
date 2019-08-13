@@ -26,7 +26,6 @@ from database.models.musical_work import MusicalWork
 from database.models.person import Person
 from database.models.section import Section
 from database.models.source import Source
-from database.models.collection_of_sources import CollectionOfSources
 from database.models.file import File
 from database.models.part import Part
 from database.models.software import Software
@@ -34,7 +33,6 @@ from database.models.encoding_workflow import EncodingWorkFlow
 from database.models.instrument import Instrument
 from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.contribution_musical_work import ContributionMusicalWork
-from database.models.contribution_section import ContributionSection
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
 
@@ -42,7 +40,7 @@ from database.models.source_instantiation import SourceInstantiation
 def parseSource(item_name, item_type):
     try:
         if (item_type.__name__ == 'Section' or
-                item_type.__name__ == 'CollectionOfSources'):
+                item_type.__name__ == 'Source'):
 
             return item_type.objects.get_or_create(title=item_name,
                                                    url='https://docs.google.com/spreadsheets/d/1G1CPeHKjLAIXZPJSuwIOOIoq9BiPm7H97ikBEZ9ayNE/edit#gid=588272074')
@@ -170,7 +168,7 @@ if __name__ == "__main__":
             print('file_name', file_input)
             # url_input = [row[17], row[20], row[23]]
 
-            collection = parseSource(collection_input, CollectionOfSources)
+            collection = parseSource(collection_input, Source)
 
             if collection is not None:
 
@@ -190,15 +188,15 @@ if __name__ == "__main__":
                 work.sacred_or_secular = religiosity_input
                 work.save()
 
-                section = Section(title=work_input, musical_work=work)
-                section.save()
+                # section = Section(title=work_input, musical_work=work)
+                # section.save()
 
                 instrument = parseSource(instrument_input, Instrument)
                 part = None
 
                 if instrument is not None:
                     part = Part(
-                        section=section,
+                        musical_work=work,
                         written_for=instrument[0])
                     part.save()
 
@@ -221,14 +219,6 @@ if __name__ == "__main__":
                     )
                     contribute.save()
 
-                    contribute = ContributionSection(
-                        person=composer[0],
-                        certainty_of_attribution=composer_certainty_of_attribution,
-                        role='COMPOSER',
-                        contributed_to_section=section
-                    )
-                    contribute.save()
-
 
                 if poet is not None:
                     contribute = ContributionMusicalWork(
@@ -239,30 +229,23 @@ if __name__ == "__main__":
                     )
                     contribute.save()
 
-                    contribute = ContributionSection(
-                        person=poet[0],
-                        certainty_of_attribution=poet_certainty_of_attribution,
-                        role='AUTHOR',
-                        contributed_to_section=section
-                    )
-                    contribute.save()
 
                 source = Source(
-                    collection=collection[0],
-                    portion=source_portion_input)
+                    title=collection_input,
+                    source_type='DIGITAL')
                 source.save()
 
                 source_instantiation = SourceInstantiation(source=source,
-                                                           work=work)
+                                                           portion=source_portion_input, work=work)
                 source_instantiation.save()
 
                 for index, val in enumerate(file_type_input):
                     # Delete file if already exists
                     if not os.path.exists(mediapath):
                         os.makedirs(mediapath)
-                    for filename_media in os.listdir(mediapath):
-                        if fnmatch.fnmatch(filename_media, file_input[index]):
-                            os.remove(mediapath + filename_media)
+                    # for filename_media in os.listdir(mediapath):
+                    #     if fnmatch.fnmatch(filename_media, file_input[index]):
+                    #         os.remove(mediapath + filename_media)
 
                     file_path = os.getcwd()
                     file_path += '/sample_data_for_SIMSSA_DB/Florence_164/files/'

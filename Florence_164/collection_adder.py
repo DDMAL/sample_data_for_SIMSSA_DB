@@ -17,15 +17,7 @@ from django.core.wsgi import get_wsgi_application
 
 application = get_wsgi_application()
 
-from database.models.collection_of_sources import CollectionOfSources
-
-
-def parse_collection(title):
-    """Check if collection exists already"""
-    try:
-        return CollectionOfSources.objects.get(title=title)
-    except CollectionOfSources.DoesNotExist:
-        return None
+from database.models.source import Source
 
 
 print('Adding collections...')
@@ -39,20 +31,10 @@ with open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/collection.csv'
         publication_date_start_input = row[2]
         publication_date_end_input = row[3]
         url = row[4]
+        source = Source.objects.get_or_create(
+            title=title_input, source_type='DIGITAL', editorial_notes=editorial_notes_input, url=url,
+            date_range_year_only=(
+                    int(publication_date_start_input), int(publication_date_end_input))
+        )[0]
 
-        c = parse_collection(title_input)
-
-        if c is None:
-            c = CollectionOfSources(title=title_input)
-
-            if editorial_notes_input:
-                c.editorial_notes = editorial_notes_input
-
-            if publication_date_start_input and publication_date_end_input:
-                c.publication_date = (
-                    publication_date_start_input, publication_date_end_input)
-            if url:
-                c.url = url
-
-            c.save()
-            print(c, " added to the database")
+        print(source, " added to the database")
