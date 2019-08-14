@@ -285,7 +285,7 @@ if __name__ == "__main__":
                 death_input = '1611'
                 viaf_url_input = 'http://viaf.org/viaf/32192606'
 
-                counter, header = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
+            counter, header = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
                                        folder_name, counter, header)
 
     with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data_for_SIMSSA_DB",
