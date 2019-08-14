@@ -89,8 +89,6 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
     for file_name_all in os.listdir(
             os.path.join(os.getcwd(), folder_name)):  # iterate each file within the folder
         if '.DS_Store' in file_name_all: continue
-        print('-----------------------', given_name_input, surname_input, birth_input, death_input, viaf_url_input,
-              folder_name, counter, header)
         counter += 1
         file_name, file_extension = os.path.splitext(file_name_all)
         all_file_names.append(file_name)
@@ -132,6 +130,7 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
         section_name_format = re.sub(r'[0-9]+', '', section_name_format)
         # remove the unnecessary numbering for sections
         # Find the metadata in the CSV file
+        found_entry = False
         with open(os.path.join(os.getcwd(), 'RenComp7_metadata_IL_no_duplicate.csv')) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             rows = []
@@ -140,11 +139,15 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
         if rows[counter + 1][0] == os.path.join(folder_name,
                                                 file_name_all):
             file_ID = counter + 1
+            found_entry = True
         else:
-            for file_ID, item in enumerate(rows[0]):
-                if item == os.path.join(folder_name,
+            for file_ID, item in enumerate(rows):
+                if item[0] == os.path.join(folder_name,
                                         file_name_all):
+                    found_entry = True
                     break
+        if found_entry == False:
+            input('Entry not matched!')
         file_name = rows[file_ID][3]
         section_name_format = rows[file_ID][4]
         if rows[file_ID][6] == 'Secular':
@@ -156,6 +159,7 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
         genre_style_input = 'Renaissance'
         genre_type_input = rows[file_ID][5]
         # Save these info into the DB
+
         work, bool_work_new = MusicalWork.objects.get_or_create(
             variant_titles=[file_name], contributions__person__surname=surname_input,
             contributions__person__given_name=given_name_input)
@@ -177,12 +181,12 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
                 counter_same_file += 1
 
                 work, bool_work_new = MusicalWork.objects.get_or_create(
-                    variant_titles=[file_name_split[0][:-1] + ' ' + file_name],
-
-                )
+            variant_titles=[file_name], contributions__person__surname=surname_input,
+            contributions__person__given_name=given_name_input)
             else:
                 work, bool_work_new = MusicalWork.objects.get_or_create(
-                    variant_titles=[file_name_split[0][:-1] + ' ' + file_name], )
+            variant_titles=[file_name], contributions__person__surname=surname_input,
+            contributions__person__given_name=given_name_input)
                 section, bool_section_new = Section.objects.get_or_create(title=section_name_format, musical_work=work)
             contribute = createContribution(p, work)
         # Create collections
@@ -281,7 +285,7 @@ if __name__ == "__main__":
                 death_input = '1611'
                 viaf_url_input = 'http://viaf.org/viaf/32192606'
 
-            counter, header = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
+                counter, header = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
                                        folder_name, counter, header)
 
     with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data_for_SIMSSA_DB",
