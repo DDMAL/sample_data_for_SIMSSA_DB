@@ -3,10 +3,10 @@ import sys
 import csv
 from datetime import date
 import re
-proj_path = "../../"
+#proj_path = "../../"
 
 # This is so mpythoy local_settings.py gets loaded.
-os.chdir(proj_path)
+#os.chdir(proj_path)
 
 # This is so Django knows where to find stuff.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "simssadb.settings")
@@ -80,13 +80,13 @@ def addPiece(
 
     counter_same_file = 1
     for each_format in os.listdir(
-            os.path.join(os.getcwd(), folder_name)
+            os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD', folder_name)
     ):  # iterate each file within the folder
 
         if each_format != ".DS_Store":
             for file_name_all in os.listdir(
                     os.path.join(
-                        os.getcwd(), folder_name, each_format
+                        os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD', folder_name, each_format
                     )
             ):
                 if os.path.isdir(file_name_all):
@@ -127,7 +127,7 @@ def addPiece(
                 if 'ista est' in file_name:
                     print('debug')
                 # Find the metadata in the CSV file
-                with open(os.path.join(os.getcwd(), 'JLSDD (corr IL).csv')) as csvfile:
+                with open(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD', 'JLSDD (corr IL).csv')) as csvfile:
                     readCSV = csv.reader(csvfile, delimiter=',')
                     rows = []
                     for row in readCSV:
@@ -212,7 +212,7 @@ def addPiece(
                 if section_name != '':
                     source_instantiation.sections.add(section)
                 file_path = os.path.join(
-                    os.getcwd(),
+                    os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD',
                     folder_name,
                     each_format,
                     file_name_all,
@@ -244,15 +244,16 @@ mediatype = "symbolic_music/"
 mediapath = getattr(settings, "MEDIA_ROOT", None)
 mediapath = mediapath + mediatype
 counter = 0
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-all_folders = os.listdir(os.getcwd())
+#os.chdir(os.path.dirname(os.path.abspath(__file__)))
+all_folders = os.listdir(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD'))
 # Create CSV file to export the metadata to check
 header = [
     ['File Name', 'Composer Given Name', 'Composer Surname', 'Musical Work Name', 'Section Name', 'Secure Attribution',
      'Collection Name'], ]
 
 for folder_name in all_folders:
-    if os.path.isfile(folder_name) or folder_name == "work_source_adder.py" or '(not secure)' in folder_name:
+    if os.path.isfile(folder_name) or folder_name == "work_source_adder.py" or '(not secure)' in folder_name or 'csv' \
+                in folder_name:
         continue
 
     else:
@@ -278,6 +279,7 @@ for folder_name in all_folders:
                 secure = True
             else:
                 secure = False
+
         counter, header = addPiece(
             given_name_input,
             surname_input,

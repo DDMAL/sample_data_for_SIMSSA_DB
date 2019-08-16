@@ -4,15 +4,15 @@ import re
 from datetime import date
 import csv
 
-proj_path = "../../"
-
+#proj_path = "../../"
+#print(os.getcwd())
 # This is so mpythoy local_settings.py gets loaded.
-os.chdir(proj_path)
+#os.chdir(proj_path)
 
 # This is so Django knows where to find stuff.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "simssadb.settings")
 
-sys.path.append(os.getcwd())
+#sys.path.append(os.getcwd())
 
 # This is so models get loaded.
 from django.core.wsgi import get_wsgi_application
@@ -87,7 +87,7 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
 
     counter_same_file = 1
     for file_name_all in os.listdir(
-            os.path.join(os.getcwd(), folder_name)):  # iterate each file within the folder
+            os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'RenComp7', folder_name)):  # iterate each file within the folder
         if '.DS_Store' in file_name_all: continue
         counter += 1
         file_name, file_extension = os.path.splitext(file_name_all)
@@ -131,7 +131,7 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
         # remove the unnecessary numbering for sections
         # Find the metadata in the CSV file
         found_entry = False
-        with open(os.path.join(os.getcwd(), 'RenComp7_metadata_IL_no_duplicate.csv')) as csvfile:
+        with open(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'RenComp7', 'RenComp7_metadata_IL_no_duplicate.csv')) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             rows = []
             for row in readCSV:
@@ -199,7 +199,7 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
         else:
             source_instantiation = SourceInstantiation.objects.get_or_create(source=source, portion=str(counter),
                                                                              work=work)[0]
-        file_path = os.path.join(os.getcwd(), folder_name, file_name_all)
+        file_path = os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'RenComp7', folder_name, file_name_all)
         if file_extension == '.xml':
             file_local = open(file_path)
         else:
@@ -226,9 +226,9 @@ if __name__ == "__main__":
     mediatype = 'symbolic_music/'
     mediapath = getattr(settings, "MEDIA_ROOT", None)
     mediapath = mediapath + mediatype
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    #os.chdir(os.path.dirname(os.path.abspath(__file__)))
     counter = 0
-    all_folders = os.listdir(os.path.join(os.getcwd()))
+    all_folders = os.listdir(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'RenComp7'))
     # Create CSV file to export the metadata to check
     header = [
         ['File Name', 'Composer Given Name', 'Composer Surname', 'Musical Work Name', 'Section Name',
@@ -288,7 +288,7 @@ if __name__ == "__main__":
             counter, header = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
                                        folder_name, counter, header)
 
-    with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data_for_SIMSSA_DB",
-                           'RenComp7_metadata.csv'), 'w') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerows(header)
+    # with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data_for_SIMSSA_DB",
+    #                        'RenComp7_metadata.csv'), 'w') as csvFile:
+    #     writer = csv.writer(csvFile)
+    #     writer.writerows(header)
