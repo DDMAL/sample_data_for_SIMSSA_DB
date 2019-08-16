@@ -3,16 +3,16 @@ import sys
 import csv
 from datetime import date
 import re
-#proj_path = "../../"
+proj_path = "../../"
 
 # This is so mpythoy local_settings.py gets loaded.
-#os.chdir(proj_path)
+os.chdir(proj_path)
 
 # This is so Django knows where to find stuff.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "simssadb.settings")
 
 sys.path.append(os.getcwd())
-
+print('Original path is:', os.getcwd())
 # This is so models get loaded.
 from django.core.wsgi import get_wsgi_application
 from django.conf import settings
@@ -29,8 +29,8 @@ from database.models.file import File
 from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
-from sample_data_for_SIMSSA_DB.RenComp7.work_source_adder import createContribution
-from sample_data_for_SIMSSA_DB.Florence_164.work_source_adder import parseSource
+from sample_data_for_SIMSSA_DB.common_function import createContribution
+from sample_data_for_SIMSSA_DB.common_function import parseSource
 
 
 
@@ -237,60 +237,61 @@ def addPiece(
                                secure, "JLSDD"])
     return counter, header
 
+if __name__ == "__main__":
+    print("Adding pieces for JLSDD...")
 
-print("Adding pieces for JLSDD...")
+    mediatype = "symbolic_music/"
+    mediapath = getattr(settings, "MEDIA_ROOT", None)
+    mediapath = mediapath + mediatype
+    counter = 0
+    #os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    print('Now path is:', os.getcwd())
+    all_folders = os.listdir(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD'))
+    # Create CSV file to export the metadata to check
+    header = [
+        ['File Name', 'Composer Given Name', 'Composer Surname', 'Musical Work Name', 'Section Name', 'Secure Attribution',
+         'Collection Name'], ]
 
-mediatype = "symbolic_music/"
-mediapath = getattr(settings, "MEDIA_ROOT", None)
-mediapath = mediapath + mediatype
-counter = 0
-#os.chdir(os.path.dirname(os.path.abspath(__file__)))
-all_folders = os.listdir(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD'))
-# Create CSV file to export the metadata to check
-header = [
-    ['File Name', 'Composer Given Name', 'Composer Surname', 'Musical Work Name', 'Section Name', 'Secure Attribution',
-     'Collection Name'], ]
+    for folder_name in all_folders:
+        if os.path.isfile(folder_name) or folder_name == "work_source_adder.py" or '(not secure)' in folder_name or 'csv' \
+                    in folder_name:
+            continue
 
-for folder_name in all_folders:
-    if os.path.isfile(folder_name) or folder_name == "work_source_adder.py" or '(not secure)' in folder_name or 'csv' \
-                in folder_name:
-        continue
+        else:
+            print('the current folder is---------------------------------', folder_name)
+            if "Josquin" in folder_name:  # this one has different syntax
+                given_name_input = "Josquin"
+                surname_input = "des Prez"
+                birth_input = "1440"
+                death_input = "1521"
+                viaf_url_input = "http://viaf.org/viaf/100226284"
+                if "(secure)" in folder_name:
 
-    else:
-        print('the current folder is---------------------------------', folder_name)
-        if "Josquin" in folder_name:  # this one has different syntax
-            given_name_input = "Josquin"
-            surname_input = "des Prez"
-            birth_input = "1440"
-            death_input = "1521"
-            viaf_url_input = "http://viaf.org/viaf/100226284"
-            if "(secure)" in folder_name:
+                    secure = True
+                else:
+                    secure = False
+            if "La Rue" in folder_name:
+                given_name_input = "Pierre"
+                surname_input = "La Rue"
+                birth_input = "1460"
+                death_input = "1518"
+                viaf_url_input = "http://viaf.org/viaf/265244429"
+                if "(secure)" in folder_name:
+                    secure = True
+                else:
+                    secure = False
 
-                secure = True
-            else:
-                secure = False
-        if "La Rue" in folder_name:
-            given_name_input = "Pierre"
-            surname_input = "La Rue"
-            birth_input = "1460"
-            death_input = "1518"
-            viaf_url_input = "http://viaf.org/viaf/265244429"
-            if "(secure)" in folder_name:
-                secure = True
-            else:
-                secure = False
-
-        counter, header = addPiece(
-            given_name_input,
-            surname_input,
-            birth_input,
-            death_input,
-            viaf_url_input,
-            folder_name,
-            counter,
-            secure,
-            header
-        )
+            counter, header = addPiece(
+                given_name_input,
+                surname_input,
+                birth_input,
+                death_input,
+                viaf_url_input,
+                folder_name,
+                counter,
+                secure,
+                header
+            )
 # with open(os.path.join(os.getcwd(), "sample_data", 'JLSDD_metadata.csv'), 'w') as csvFile:
 #     writer = csv.writer(csvFile)
 #     writer.writerows(header)

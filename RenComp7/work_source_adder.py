@@ -4,15 +4,15 @@ import re
 from datetime import date
 import csv
 
-#proj_path = "../../"
+proj_path = "../../"
 #print(os.getcwd())
 # This is so mpythoy local_settings.py gets loaded.
-#os.chdir(proj_path)
+os.chdir(proj_path)
 
 # This is so Django knows where to find stuff.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "simssadb.settings")
 
-#sys.path.append(os.getcwd())
+sys.path.append(os.getcwd())
 
 # This is so models get loaded.
 from django.core.wsgi import get_wsgi_application
@@ -35,21 +35,8 @@ from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.contribution_musical_work import ContributionMusicalWork
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
-from sample_data_for_SIMSSA_DB.Florence_164.work_source_adder import parseSource
-
-
-def createContribution(p, work):
-    """
-
-    :return:
-    """
-    contribute = ContributionMusicalWork.objects.get_or_create(
-        person=p,
-        certainty_of_attribution=True,  # We assume these pieces are all secure
-        role='COMPOSER',
-        contributed_to_work=work
-    )[0]
-    return contribute
+from sample_data_for_SIMSSA_DB.common_function import parseSource
+from sample_data_for_SIMSSA_DB.common_function import createContribution
 
 
 def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input, folder_name, counter, header):
