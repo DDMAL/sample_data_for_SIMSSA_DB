@@ -3,16 +3,19 @@ import sys
 import csv
 from datetime import date
 import re
+print('the original cwd at JLSDD', os.getcwd())
+original_cwd = os.getcwd()
 proj_path = "../../"
 
 # This is so mpythoy local_settings.py gets loaded.
 os.chdir(proj_path)
+print('the original cwd at JLSDD after specifying the proj path', os.getcwd())
 
 # This is so Django knows where to find stuff.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "simssadb.settings")
 
 sys.path.append(os.getcwd())
-print('Original path is:', os.getcwd())
+
 # This is so models get loaded.
 from django.core.wsgi import get_wsgi_application
 from django.conf import settings
@@ -29,8 +32,8 @@ from database.models.file import File
 from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
-from sample_data_for_SIMSSA_DB.common_function import createContribution
-from sample_data_for_SIMSSA_DB.common_function import parseSource
+from sample_data_for_SIMSSA_DB.RenComp7.work_source_adder import createContribution
+from sample_data_for_SIMSSA_DB.Florence_164.work_source_adder import parseSource
 
 
 
@@ -80,13 +83,13 @@ def addPiece(
 
     counter_same_file = 1
     for each_format in os.listdir(
-            os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD', folder_name)
+            os.path.join(os.getcwd(), folder_name)
     ):  # iterate each file within the folder
 
         if each_format != ".DS_Store":
             for file_name_all in os.listdir(
                     os.path.join(
-                        os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD', folder_name, each_format
+                        os.getcwd(), folder_name, each_format
                     )
             ):
                 if os.path.isdir(file_name_all):
@@ -127,7 +130,7 @@ def addPiece(
                 if 'ista est' in file_name:
                     print('debug')
                 # Find the metadata in the CSV file
-                with open(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD', 'JLSDD (corr IL).csv')) as csvfile:
+                with open(os.path.join(os.getcwd(), 'JLSDD (corr IL).csv')) as csvfile:
                     readCSV = csv.reader(csvfile, delimiter=',')
                     rows = []
                     for row in readCSV:
@@ -212,7 +215,7 @@ def addPiece(
                 if section_name != '':
                     source_instantiation.sections.add(section)
                 file_path = os.path.join(
-                    os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD',
+                    os.getcwd(),
                     folder_name,
                     each_format,
                     file_name_all,
@@ -244,54 +247,56 @@ if __name__ == "__main__":
     mediapath = getattr(settings, "MEDIA_ROOT", None)
     mediapath = mediapath + mediatype
     counter = 0
-    #os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    print('Now path is:', os.getcwd())
-    all_folders = os.listdir(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB', 'JLSDD'))
+    print('os.getcwd', os.getcwd())
+    print('the current file directory', os.path.abspath(__file__))
+    if os.getcwd() == '/':
+        os.chdir(os.path.join('code', 'simssadb', 'sample_data_for_SIMSSA_DB', 'JLSDD'))
+    all_folders = os.listdir(os.getcwd())
     # Create CSV file to export the metadata to check
     header = [
         ['File Name', 'Composer Given Name', 'Composer Surname', 'Musical Work Name', 'Section Name', 'Secure Attribution',
          'Collection Name'], ]
 
     for folder_name in all_folders:
-        if os.path.isfile(folder_name) or folder_name == "work_source_adder.py" or '(not secure)' in folder_name or 'csv' \
-                    in folder_name:
+        print('all folders', all_folders)
+        if os.path.isfile(folder_name) or folder_name == "work_source_adder.py" or '(not secure)' in folder_name:
             continue
+        if 'Josquin' not in folder_name and 'La Rue' not in folder_name:  # we only want Josquin and La Rue folders
+            continue
+        print('the current folder is---------------------------------', folder_name)
+        if "Josquin" in folder_name:  # this one has different syntax
+            given_name_input = "Josquin"
+            surname_input = "des Prez"
+            birth_input = "1440"
+            death_input = "1521"
+            viaf_url_input = "http://viaf.org/viaf/100226284"
+            if "(secure)" in folder_name:
 
-        else:
-            print('the current folder is---------------------------------', folder_name)
-            if "Josquin" in folder_name:  # this one has different syntax
-                given_name_input = "Josquin"
-                surname_input = "des Prez"
-                birth_input = "1440"
-                death_input = "1521"
-                viaf_url_input = "http://viaf.org/viaf/100226284"
-                if "(secure)" in folder_name:
-
-                    secure = True
-                else:
-                    secure = False
-            if "La Rue" in folder_name:
-                given_name_input = "Pierre"
-                surname_input = "La Rue"
-                birth_input = "1460"
-                death_input = "1518"
-                viaf_url_input = "http://viaf.org/viaf/265244429"
-                if "(secure)" in folder_name:
-                    secure = True
-                else:
-                    secure = False
-
-            counter, header = addPiece(
-                given_name_input,
-                surname_input,
-                birth_input,
-                death_input,
-                viaf_url_input,
-                folder_name,
-                counter,
-                secure,
-                header
-            )
-# with open(os.path.join(os.getcwd(), "sample_data", 'JLSDD_metadata.csv'), 'w') as csvFile:
-#     writer = csv.writer(csvFile)
-#     writer.writerows(header)
+                secure = True
+            else:
+                secure = False
+        if "La Rue" in folder_name:
+            given_name_input = "Pierre"
+            surname_input = "La Rue"
+            birth_input = "1460"
+            death_input = "1518"
+            viaf_url_input = "http://viaf.org/viaf/265244429"
+            if "(secure)" in folder_name:
+                secure = True
+            else:
+                secure = False
+        counter, header = addPiece(
+            given_name_input,
+            surname_input,
+            birth_input,
+            death_input,
+            viaf_url_input,
+            folder_name,
+            counter,
+            secure,
+            header
+        )
+    os.chdir(original_cwd)
+    # with open(os.path.join(os.getcwd(), "sample_data", 'JLSDD_metadata.csv'), 'w') as csvFile:
+    #     writer = csv.writer(csvFile)
+    #     writer.writerows(header)
