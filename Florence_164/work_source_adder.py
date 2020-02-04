@@ -3,6 +3,7 @@ import sys
 import csv
 import fnmatch
 from datetime import date
+original_cwd = os.getcwd()  # change back to the original path for the next script
 
 proj_path = "../../"
 
@@ -35,9 +36,25 @@ from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.contribution_musical_work import ContributionMusicalWork
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
-from sample_data_for_SIMSSA_DB.common_function import parseSource
 
 
+def parseSource(item_name, item_type):
+    try:
+        if (item_type.__name__ == 'Section' or
+                item_type.__name__ == 'Source'):
+
+            return item_type.objects.get_or_create(title=item_name,
+                                                   url='https://docs.google.com/spreadsheets/d/1G1CPeHKjLAIXZPJSuwIOOIoq9BiPm7H97ikBEZ9ayNE/edit#gid=588272074')
+
+        elif (item_type.__name__ == 'GenreAsInStyle' or
+              item_type.__name__ == 'Instrument' or
+              item_type.__name__ == 'GenreAsInType'):
+
+            return item_type.objects.get_or_create(name=item_name)
+
+    except item_type.DoesNotExist:
+        print('Does not exist: ' + item_name)
+        return None
 
 
 def parseMusicalWork(item_name, surname_input, given_name_input):
@@ -92,8 +109,8 @@ if __name__ == "__main__":
     mediatype = 'symbolic_music/'
     mediapath = getattr(settings, "MEDIA_ROOT", None)
     mediapath = mediapath + mediatype
-    print('Now path is:', os.getcwd())
-    with open(os.getcwd() + '/sample_data_for_SIMSSA_DB/Florence_164/Florence_metadata_SIMSSA_DB.csv') as csvfile:
+    print('os.getcwd', os.getcwd())
+    with open(os.path.join(os.getcwd(), 'sample_data_for_SIMSSA_DB','Florence_164','Florence_metadata_SIMSSA_DB.csv')) as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
 
         for row in readCSV:
@@ -258,3 +275,4 @@ if __name__ == "__main__":
 
                     file_import.closed
                     file_local.closed
+    os.chdir(original_cwd)
