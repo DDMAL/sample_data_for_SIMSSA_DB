@@ -227,10 +227,12 @@ if __name__ == "__main__":
     mediapath = getattr(settings, "MEDIA_ROOT", None)
     mediapath = mediapath + mediatype
     counter = 0
-    print('os.getcwd', os.getcwd())
+    path_to_all_folders = os.path.abspath(__file__)[:-len("/work_source_adder.py")]
+    print('the current working directory', 'os.getcwd', os.getcwd())
     print('the current file directory', os.path.abspath(__file__))
-    if os.getcwd() == '/':
-        os.chdir(os.path.join('code', 'simssadb', 'sample_data_for_SIMSSA_DB', 'RenComp7'))
+    # if os.getcwd() == '/':
+    os.chdir(path_to_all_folders) 
+    print('navigate to ' , os.getcwd() , ' via ' , path_to_all_folders)
     all_folders = os.listdir(os.getcwd())
     print('all folders', all_folders)
     # Create CSV file to export the metadata to check
@@ -256,21 +258,18 @@ if __name__ == "__main__":
                 birth_input = '1410'
                 death_input = '1497'
                 viaf_url_input = 'http://viaf.org/viaf/22150988'
-
             elif folder_name == 'Antoine_Busnoys':
                 given_name_input = 'Antoine'
                 surname_input = 'Busnoys'
                 birth_input = '1430'
                 death_input = '1492'
                 viaf_url_input = ''  # I did not find VIAF entry for this one
-
             elif folder_name == 'Johannes_Martini':
                 given_name_input = 'Johannes'
                 surname_input = 'Martini'
                 birth_input = '1440'
                 death_input = '1497'
                 viaf_url_input = 'http://viaf.org/viaf/66661850'
-
             elif folder_name == 'Josquin_des_Prez':
                 given_name_input = 'Josquin'
                 surname_input = 'des Prez'
